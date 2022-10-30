@@ -1,0 +1,3 @@
+[submodule "scripts/engine/utils"]
+	path = scripts/engine/utils
+	url = https://github.com/unniisme/utils.git
