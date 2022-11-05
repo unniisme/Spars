@@ -1,5 +1,5 @@
 import pygame
-from utils.math_utils import *
+from .utils.math_utils import *
 
 ## A barebone 3d renderer test
 

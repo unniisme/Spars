@@ -1,4 +1,5 @@
-from utils import *
+from .utils.math_utils import *
+from .utils.time_utils import *
 
 class Behaviour:
 	"""
@@ -37,11 +38,6 @@ class Transform2D(Transform):
 		self.rotation = rotation
 		self.label = label
 
-	def __eq__(self, other):
-		if other == None:
-			return False
-		return self.position == other.position and self.rotation == other.rotation and self.label == other.label
-
 class GameObject:
 	"""
 	Abstract class to represent any object on a grid
@@ -50,11 +46,19 @@ class GameObject:
 
 	This version of the class is initialized using a pre define transform
 	"""
-	def __init__(self, transform : Transform = Transform()):
+
+	uid = 0
+	def AssignUID():
+		GameObject.uid += 1
+		return GameObject.uid-1
+
+	def __init__(self, transform : Transform):
 		self.transform = transform
 		if transform == None:
 			self.label = None
 			return
+
+		self.uid = GameObject.AssignUID()
 		
 		self.label = transform.label
 		self.scripts = {}
@@ -70,7 +74,7 @@ class GameObject:
 	def __eq__(self, other):
 		if other == None:
 			return False
-		return self.transform == other.transform and self.label == other.label
+		return self.uid == other.uid
 
 	def __del__(self):
 		"""
