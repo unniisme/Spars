@@ -1,4 +1,4 @@
-from Objects import *
+from .Objects import *
 
 class Scene(GameObject):
     """
