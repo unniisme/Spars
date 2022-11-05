@@ -18,16 +18,15 @@ class Mesh:
 
     def IsomtericProjection(self):
         # For now assuming camera at origin facing (0,0,1)
-        return [Vector2(x).asTuple() for x in self.points]
+        return [Vector2(x).asTuple() for x in sorted(self.points, key = lambda x: x[0], reverse=True)]
 
 class Box:
-    def __init__(self, semiwidth, centre, alpha, beta):
-        self.alpha = alpha
-        self.beta = beta
+    def __init__(self, semiwidth, centre, direction : Vector3):
+        self.direction = direction
         self.semiwidth = semiwidth
         self.centre = centre
 
-        x = Vector3.SphericalConstructorDeg(1, alpha, beta)
+        x = direction.Normalized()
         try:
             y = x.Cross(Vector3.X()).Normalized()
         except:
@@ -42,13 +41,12 @@ class Box:
         points = [Vector3(centre) + semiwidth*(i*x+j*y+z) for i in [-1,1] for j in [1,-1]]
         self.faces.append(Mesh(points, (100,50,0)))
 
-    def Update(self, alpha, beta):
-        self.alpha = alpha
-        self.beta = beta
+    def Update(self, direction):
+        self.direction = direction
         centre = self.centre
         semiwidth = self.semiwidth
 
-        x = Vector3.SphericalConstructorDeg(1, alpha, beta)
+        x = direction.Normalized()
         try:
             y = x.Cross(Vector3.X()).Normalized()
         except:
@@ -56,18 +54,21 @@ class Box:
         z = Vector3.Cross(x, y)
 
         self.faces = []
-        points = [(Vector3(centre) + semiwidth*(x+i*y+j*z)).asTuple() for i in [-1,1] for j in [1,-1]]
+        points = [(Vector3(centre) + semiwidth*(x+i*y+j*z)) for i in [-1,1] for j in [1,-1]]
+        points[0], points[1] = points[1], points[0]
         self.faces.append(Mesh(points, (100,100,0)))
         points = [Vector3(centre) + semiwidth*(i*x+y+j*z) for i in [-1,1] for j in [1,-1]]
+        points[0], points[1] = points[1], points[0]
         self.faces.append(Mesh(points, (50,100,0)))
         points = [Vector3(centre) + semiwidth*(i*x+j*y+z) for i in [-1,1] for j in [1,-1]]
+        points[0], points[1] = points[1], points[0]
         self.faces.append(Mesh(points, (100,50,0)))
 
 
 screen = pygame.display.set_mode((800,600))
 clock = pygame.time.Clock()
-box = Box(30, (400,300,100), 45, 45)
-turnrate = 0.4
+box = Box(30, (400,300,100), Vector3.X())
+turnrate = 0.1
 running=True
 while running:
     screen.fill((255,255,255))
@@ -83,13 +84,13 @@ while running:
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_UP]:
-        box.Update(box.alpha+turnrate, box.beta)
+        box.Update(box.direction.Rotate(turnrate, Vector3.X()))
     if pressed[pygame.K_DOWN]:
-        box.Update(box.alpha-turnrate, box.beta) 
+        box.Update(box.direction.Rotate(-turnrate, Vector3.X()))
     if pressed[pygame.K_RIGHT]:
-        box.Update(box.alpha, box.beta+turnrate)
+        box.Update(box.direction.Rotate(turnrate, Vector3.UP()))
     if pressed[pygame.K_LEFT]:
-        box.Update(box.alpha, box.beta-turnrate) 
+        box.Update(box.direction.Rotate(-turnrate, Vector3.UP()))
 
     for mesh in box.faces:
         pygame.draw.polygon(screen, mesh.color, mesh.IsomtericProjection())    
