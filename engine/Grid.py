@@ -217,9 +217,9 @@ class Grid:
 
 #Directions are handled as angles in degree from positive x axis
 class Direction:
-    LEFT = 0
+    LEFT = 180
     UP = 90
-    RIGHT = 180
+    RIGHT = 0
     DOWN = 270
 
 

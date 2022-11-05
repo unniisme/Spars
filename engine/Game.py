@@ -11,6 +11,7 @@ class PyGameInstance:
         self.playing = False
 
         self.screen = pygame.display.set_mode([breadth, height])
+        self.clock = pygame.time.Clock()
 
     def Start(self):
         """Set instance to running"""
@@ -42,4 +43,5 @@ class PyGameInstance:
     def endFrame(self):
         """End a frame"""
         pygame.display.flip()
+        self.clock.tick(60)
 
