@@ -2,7 +2,7 @@ from ..Objects import GameObject, Transform
 
 class Rectangle(GameObject):
 
-    def __init__(self, transform : Transform = Transform(), breadth = 0, height = 0):
+    def __init__(self, transform : Transform, breadth, height):
         super().__init__(transform)
         self.breadth = breadth
         self.height = height

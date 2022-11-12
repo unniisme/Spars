@@ -16,10 +16,9 @@ class GridCell:
         self.x = position[0]
         self.y = position[1]
         self.label = label
-        self.objects = []
 
     def __str__(self):
-        return (str(self.label) if len(self.objects) == 0 else self.objects[0].label[0])
+        return (str(self.label))
 
     def GetPosition(self):
         """Returns position of the gridCell"""

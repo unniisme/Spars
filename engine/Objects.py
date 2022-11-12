@@ -38,6 +38,9 @@ class Transform2D(Transform):
 		self.rotation = rotation
 		self.label = label
 
+	def Null(label = None):
+		return Transform(Vector2(0,0), 0, label)
+
 class GameObject:
 	"""
 	Abstract class to represent any object on a grid
