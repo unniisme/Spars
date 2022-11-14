@@ -1,7 +1,9 @@
 from engine.Objects_2D.TileMap import GenerativeTileMap
 from engine.Renderer.TileMapRenderer import GenerativeTileMapRenderer
 from engine.Game import PyGameInstance
-
+from engine.Objects import Transform2D
+import pygame
+from engine.utils.math_utils import Vector2
 
 gridFile = 'grid1'
     # Load grid from file
@@ -17,7 +19,7 @@ for i in range(rows):
 
 file.close()
 
-rend = GenerativeTileMapRenderer(grid, int(1000/max(rows, columns)))
+rend = GenerativeTileMapRenderer(Transform2D.Null(), grid, int(1000/max(rows, columns)))
 
 print(grid)
 
@@ -29,5 +31,14 @@ while game.isPlaying():
     game.initFrame()
 
     rend.Draw(game.screen)
+
+    if pygame.key.get_pressed()[pygame.K_LEFT]:
+        rend.UpdatePosition(Vector2(-0.2,0))
+    
+    if pygame.key.get_pressed()[pygame.K_UP]:
+        rend.UpdateRotation(0.02)
+
+    if pygame.key.get_pressed()[pygame.K_DOWN]:
+        rend.UpdateRotation(-0.02)
 
     game.endFrame()

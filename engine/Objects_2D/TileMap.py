@@ -1,5 +1,5 @@
 from ..Grid import *
-from ..Renderer.GridRenderer import GridRenderer
+from ..Renderer.Renderer import GridRenderer
 
 class Tile(GridCell):
 

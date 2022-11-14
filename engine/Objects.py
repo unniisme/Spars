@@ -108,3 +108,31 @@ class GameObject:
 
 	def GetParent(self):
 		return self.parent
+
+
+
+class GameObject2D(GameObject):
+
+	def __init__(self, transform : Transform2D):
+		super().__init__(transform)
+
+	def ToTransformSpace(self, v : Vector2):
+		return Vector2.Rotate(v, self.transform.rotation) + self.transform.position
+		
+	# Setters
+	def SetPosition(self, pos : Vector2):
+		self.UpdatePosition(pos - self.transform.position)
+
+	def UpdatePosition(self, offset : Vector2):
+		self.transform.position += offset
+		for child in self.children:
+			child.UpdatePosition(offset)
+
+
+	def SetRotation(self, rot : float):
+		self.UpdateRotation(rot - self.transform.rotation)
+
+	def UpdateRotation(self, offset : float):
+		self.transform.rotation += offset
+		for child in self.children:
+			child.UpdateRotation(offset)
