@@ -8,7 +8,10 @@ class Renderer2D(GameObject2D):
         super().__init__(transform)
 
     def VectorListToRenderer(self, l : list):
-        return list(map(Vector2.asTuple, map(self.ToTransformSpace, l)))
+        return list(map(Vector2.asTuple, map(self.ToWorldSpace, l)))
+
+    def Draw(self, screen):
+        pass
 
 
 

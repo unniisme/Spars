@@ -116,9 +116,13 @@ class GameObject2D(GameObject):
 	def __init__(self, transform : Transform2D):
 		super().__init__(transform)
 
-	def ToTransformSpace(self, v : Vector2):
-		return Vector2.Rotate(v, self.transform.rotation) + self.transform.position
+	def ToWorldSpace(self, v) -> Vector2:
+		v = Vector2(v)
+		return Vector2.Rotate(v, self.transform.rotation) + self.transform.position  # Rotation is not working properly
 		
+	def ToTransformSpace(self, v) -> Vector2:
+		v = Vector2(v)
+		return Vector2.Rotate(v, -self.transform.rotation) - self.transform.position  # Rotation is not working properly
 	# Setters
 	def SetPosition(self, pos : Vector2):
 		self.UpdatePosition(pos - self.transform.position)
