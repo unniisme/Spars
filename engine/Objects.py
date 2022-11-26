@@ -69,6 +69,8 @@ class GameObject:
 		self.children = []
 		self.parent = None
 
+		self.type = self.GetType()
+
 	def __repr__(self):
 		return str(self.label)
 
@@ -114,7 +116,7 @@ class GameObject:
 	# Debug
 	def GetType(self):
 		s = str(type(self))
-		return "<'" + s.split(".")[-1]
+		return s.split(".")[-1][:-2]
 
 	
 	def ToTreeString(self,  depth : int = 0, delim : str = "\t", showType : bool = True) -> str:
@@ -122,7 +124,7 @@ class GameObject:
 		s += str(self)
 		if showType:
 			s += " : " 
-			s += self.GetType()
+			s += '<' + self.type + '>'
 		s += "\n"
 		for child in self.children:
 			s += child.ToTreeString(depth+1, delim, showType)

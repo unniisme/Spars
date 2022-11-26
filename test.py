@@ -1,11 +1,4 @@
-from engine.Objects_2D.TileMap import GenerativeTileMap
-from engine.Renderer.TileMapRenderer import GenerativeTileMapRenderer
-from engine.Renderer.ShapeRenderer import ShapeRenderer2D
-from engine.Objects_2D.Shapes import *
-from engine.Game import PyGameInstance
-from engine.Objects import Transform2D
-import pygame
-from engine.utils.math_utils import Vector2
+from engine import *
 
 gridFile = 'grid1'
     # Load grid from file

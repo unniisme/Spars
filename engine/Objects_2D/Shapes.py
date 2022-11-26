@@ -126,7 +126,7 @@ class Circle(Shape2D):
 
     # Query functions
 
-    def GetCorners(self, resolution = 1):
+    def GetCorners(self, resolution = 0.5):
         """
         Returns 360/resolution points that approximate the circle
         Not recommended, as it is better directly draw a circle using pygame functions
