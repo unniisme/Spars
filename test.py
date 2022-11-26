@@ -1,7 +1,7 @@
 from engine.Objects_2D.TileMap import GenerativeTileMap
 from engine.Renderer.TileMapRenderer import GenerativeTileMapRenderer
 from engine.Renderer.ShapeRenderer import ShapeRenderer2D
-from engine.Objects_2D.Shapes import Shape2D, Rectangle
+from engine.Objects_2D.Shapes import *
 from engine.Game import PyGameInstance
 from engine.Objects import Transform2D
 import pygame
@@ -22,37 +22,35 @@ for i in range(rows):
 file.close()
 
 rend = GenerativeTileMapRenderer(Transform2D.Null(), grid, int(1000/max(rows, columns)))
-box = Rectangle(Transform2D((50,50,50), 0), 20, 20)
-boxRend = ShapeRenderer2D(Transform2D.Null(), box)
 
-print(grid)
 
-game = PyGameInstance(rend.scale*columns, rend.scale*rows)
+box = Rectangle(Transform2D((50,50), 0, "Box"), 20, 20)
+poly = Polygon(Transform2D((200,200), 0, "Polygon"), [(-100,0), (-100, 100), (0,100), (100,0), (0,-100) ])
+circ = Circle(Transform2D((400,400), 0, "Circle"), 100)
+boxRend = ShapeRenderer2D(Transform2D.Null("Box Renderer"), box)
+plyRend = ShapeRenderer2D(Transform2D.Null("Polygon Renderer"), poly)
+circRend = ShapeRenderer2D(Transform2D.Null("Circle Renderer"), circ)
+
+root = GameObject2D(Transform2D.Null("Root"))
+root.AttachChild(boxRend)
+root.AttachChild(plyRend)
+root.AttachChild(circRend)
+
+print(root.ToTreeString())
+
+game = PyGameInstance(800, 600)
 game.Start()
 
 while game.isPlaying():
 
     game.initFrame()
 
-    rend.Draw(game.screen)
+    boxcol = (0,200,0) if box.Contains(pygame.mouse.get_pos()) else (200,0,0)
+    polycol = (0,200,0) if poly.Contains(pygame.mouse.get_pos()) else (200,0,0)
+    circcol = (0,200,0) if circ.Contains(pygame.mouse.get_pos()) else (200,0,0)
 
-    col = (0,200,0) if box.Contains(pygame.mouse.get_pos()) else (200,0,0)
-
-    if box.Contains(pygame.mouse.get_pos()):
-        print("Yes")
-
-    boxRend.Draw(game.screen, col)
-
-    if pygame.key.get_pressed()[pygame.K_LEFT]:
-        rend.UpdatePosition(Vector2(-0.2,0))
-
-    if pygame.key.get_pressed()[pygame.K_RIGHT]:
-        rend.UpdatePosition(Vector2(0.2,0))
-    
-    if pygame.key.get_pressed()[pygame.K_UP]:
-        rend.UpdateRotation(0.02)
-
-    if pygame.key.get_pressed()[pygame.K_DOWN]:
-        rend.UpdateRotation(-0.02)
+    boxRend.Draw(game.screen, boxcol)
+    plyRend.Draw(game.screen, polycol)
+    circRend.Draw(game.screen, circcol)
 
     game.endFrame()

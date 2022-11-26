@@ -37,6 +37,7 @@ class Transform2D(Transform):
 		self.position = position
 		self.rotation = rotation
 		self.label = label
+		# TODO: Implement scale as well
 
 	def Null(label = None):
 		return Transform(Vector2(0,0), 0, label)
@@ -110,6 +111,25 @@ class GameObject:
 		return self.parent
 
 
+	# Debug
+	def GetType(self):
+		s = str(type(self))
+		return "<'" + s.split(".")[-1]
+
+	
+	def ToTreeString(self,  depth : int = 0, delim : str = "\t", showType : bool = True) -> str:
+		s = delim * depth
+		s += str(self)
+		if showType:
+			s += " : " 
+			s += self.GetType()
+		s += "\n"
+		for child in self.children:
+			s += child.ToTreeString(depth+1, delim, showType)
+
+		return s
+
+
 
 class GameObject2D(GameObject):
 
@@ -117,12 +137,19 @@ class GameObject2D(GameObject):
 		super().__init__(transform)
 
 	def ToWorldSpace(self, v) -> Vector2:
+		"""
+		Convert the vector from local(transform) space to world space
+		"""
 		v = Vector2(v)
-		return Vector2.Rotate(v, self.transform.rotation) + self.transform.position  # Rotation is not working properly
+		return Vector2.Rotate(v, self.transform.rotation) + self.transform.position  # Rotation is not busted. TODO: Fix it
 		
 	def ToTransformSpace(self, v) -> Vector2:
+		"""
+		Convert the vector from transform space to world space
+		"""
 		v = Vector2(v)
-		return Vector2.Rotate(v, -self.transform.rotation) - self.transform.position  # Rotation is not working properly
+		return Vector2.Rotate(v, -self.transform.rotation) - self.transform.position  # Rotation is not busted. TODO: Fix it
+	
 	# Setters
 	def SetPosition(self, pos : Vector2):
 		self.UpdatePosition(pos - self.transform.position)
