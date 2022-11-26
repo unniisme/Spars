@@ -1,5 +1,6 @@
 from .utils.math_utils import *
 from .utils.time_utils import *
+from .GameErrors import ObjectError
 
 class Behaviour:
 	"""
@@ -33,8 +34,8 @@ class Transform2D(Transform):
 	"""
 	Transform in 2D space
 	"""
-	def __init__(self, position : Vector2, rotation : float, label = None):
-		self.position = position
+	def __init__(self, position : tuple, rotation : float, label = None):
+		self.position = Vector2(position)
 		self.rotation = rotation
 		self.label = label
 		# TODO: Implement scale as well
@@ -50,6 +51,7 @@ class GameObject:
 
 	This version of the class is initialized using a pre define transform
 	"""
+	gameObjects = {}
 
 	uid = 0
 	def AssignUID():
@@ -62,14 +64,22 @@ class GameObject:
 			self.label = None
 			return
 
-		self.uid = GameObject.AssignUID()
+		self.type = self.GetType()
 		
 		self.label = transform.label
 		self.scripts = {}
 		self.children = []
 		self.parent = None
 
-		self.type = self.GetType()
+		if GameObject.uid == 0:
+			if self.type != GameObjectTypes.Scene2D:
+				raise ObjectError(ObjectError.no_scene)
+		else:
+			GameObject.gameObjects[0].AttachChild(self)
+
+		self.uid = GameObject.AssignUID()
+		GameObject.gameObjects[self.uid] = self	# TODO: update in __del__
+
 
 	def __repr__(self):
 		return str(self.label)
@@ -84,8 +94,9 @@ class GameObject:
 
 	def __del__(self):
 		"""
-		Delete object and all children. Also delete transform
+		Delete object and all children. Also delete transform and entry in dictionary of gameobjects
 		"""
+		del GameObject.gameObjects[self.uid]
 		for child in self.children:
 			del child
 		del self.transform
@@ -95,13 +106,36 @@ class GameObject:
 
 	def AttachChild(self, child : "GameObject"):
 		self.children.append(child)
+
+		if child.parent != None:
+			child.parent.RemoveChild(child)
+
 		child.parent = self
 
 	def AttachScript(self, script : Behaviour):
 		self.scripts[script.name] = script
 
+	def RemoveChild(self, child : "GameObject"):
+		self.children.remove(child)
+		child.parent = None
+
+
+	def Update(self, dt):
+		"""
+		Anything to be done in every frame
+		"""
+		pass
+
+	def doUpdate(self, dt):
+		self.Update(dt)
+		for child in self.GetChildren():
+			child.doUpdate(dt)
+
 
 	# Getters
+
+	def GetChildren(self):
+		return self.children
 
 	def GetChild(self, index : int):
 		return self.children[index]
@@ -126,7 +160,7 @@ class GameObject:
 			s += " : " 
 			s += '<' + self.type + '>'
 		s += "\n"
-		for child in self.children:
+		for child in self.GetChildren():
 			s += child.ToTreeString(depth+1, delim, showType)
 
 		return s
@@ -169,3 +203,33 @@ class GameObject2D(GameObject):
 		self.transform.rotation += offset
 		for child in self.children:
 			child.UpdateRotation(offset)
+
+
+class GameObjectTypes:
+	"""
+	Just a list of types of gameobjects
+	They're all strings.
+	"""
+	#.Objects
+	GameObject = 'GameObject'
+	GameObject2D = 'GameObject2D'	#(GameObject)
+
+	# .Objects_2D.Shapes
+	Shape2D = 'Shape2D'				#(GameObject2D)
+	Rectangle = 'Rectangle'			#(Shape2D)
+	Polygon = 'Polygon'				#(Shape2D)
+	Circle = 'Circle'				#(Shape2D)
+
+	# .Renderer.Renderer
+	Camera2D = 'Camera2D'			#(GameObject2D)
+	Renderer2D = 'Renderer2D'		#(GameObject2D)
+	GridRenderer = 'GridRenderer'	#(Renderer2D)
+	# .Renderer.ShapeRenderer
+	ShapeRenderer2D = 'ShapeRenderer2D'	#(Renderer2D)
+	# .Renderer.TileMapRenderer
+	GenerativeTileMapRenderer = 'GenerativeTileMapRenderer'	#(GridRenderer)
+
+	#.Physics_2D
+
+	#.Scene
+	Scene2D = 'Scene2D'				#(GameObject2D)

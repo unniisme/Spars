@@ -1,4 +1,4 @@
-from .Renderer import GridRenderer
+from .Renderer import Renderer2D, GridRenderer, Camera2D
 from ..Objects_2D.TileMap import GenerativeTileMap
 from ..utils.math_utils import Vector2
 import pygame
@@ -10,7 +10,8 @@ class GenerativeTileMapRenderer(GridRenderer):
 
         super().__init__(transform, tileMap, scale)
 
-    def RenderCell(self, i, j, screen):
+    def RenderCell(self, i, j):
+        camera = Renderer2D.FetchCamera()
         scale = self.scale
 
         if self.grid[i,j]: 
@@ -18,7 +19,7 @@ class GenerativeTileMapRenderer(GridRenderer):
             dxv = Vector2(1,0)*scale
             dyv = Vector2(0,1)*scale
             pts = self.VectorListToRenderer([basev, basev+dxv, basev+dxv+dyv, basev+dyv])
-            pygame.draw.polygon(screen, self.grid.layerMap[0]["col"], pts)
+            pygame.draw.polygon(camera.screen, self.grid.layerMap[0]["col"], camera.OffsetPoint(pts))
         else:
             return
         
@@ -37,7 +38,7 @@ class GenerativeTileMapRenderer(GridRenderer):
                 #pts = [(ptv + spanv).asTuple(), (ptv - spanv).asTuple(), (ptv - spanv + backv).asTuple(), (ptv + spanv + backv).asTuple()]
                 pts = self.VectorListToRenderer([(ptv + spanv), (ptv - spanv), (ptv - spanv + backv), (ptv + spanv + backv)])
 
-                pygame.draw.polygon(screen, self.grid.layerMap[1]['col'], pts)
+                pygame.draw.polygon(camera.screen, self.grid.layerMap[1]['col'], camera.OffsetPoint(pts))
 
         # Corners
         dirs = [45, 135, -135, -45]
@@ -53,5 +54,5 @@ class GenerativeTileMapRenderer(GridRenderer):
                 dyv = -Vector2.PolarConstructorDeg(self.grid.layerMap[1]['thickness'], d-45)
                 pts = self.VectorListToRenderer([(ptv + dxv), (ptv + dyv + dxv), (ptv + dyv), (ptv)])
 
-                pygame.draw.polygon(screen, self.grid.layerMap[1]['col'], pts)
+                pygame.draw.polygon(camera.screen, self.grid.layerMap[1]['col'], camera.OffsetPoint(pts))
         

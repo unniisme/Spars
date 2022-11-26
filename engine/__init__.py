@@ -5,6 +5,7 @@ print("Imported grid")
 from .Scene import *
 print("Imported Scene")
 from .Game import *
+print("Imported pyGame wrappers")
 
 from .utils.math_utils import *
 from .utils.time_utils import * 
